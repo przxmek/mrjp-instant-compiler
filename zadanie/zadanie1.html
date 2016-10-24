@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="stylesheet" type="text/css" href="white.css">
+   <title>MRJP - Zadanie 1</title>
+</head>
+<body>
+<h1 id="zadanie-1">Zadanie 1</h1>
+<p>Program w języku Instant składa się z ciągu instrukcji rozdzielonych średnikami.</p>
+<p>Instrukcje są dwojakiego rodzaju:</p>
+<ul>
+<li>wyrażenie - wypisuje obliczoną wartość wyrażenia na standardowe wyjście</li>
+<li>przypisanie postaci <code>zmienna = wyrażenie</code> - przypisuje wartość wyrażenia na zmienną po lewej stronie; nic nie wypisuje</li>
+</ul>
+<p>Wyrażenia składają się z literałów całkowitych nieujemnych, zmiennych
+ i operacji arytmetycznych. Kolejność obliczenia argumentów operatora 
+nie jest określona (można sobie wybrać wygodniejszą).</p>
+<p>Składnia w formacie BNFC</p>
+<pre><code>Prog. Program ::= [Stmt] ;
+SAss. Stmt ::= Ident "=" Exp;
+SExp. Stmt ::= Exp ;
+separator Stmt ";" ;
+
+ExpAdd.            Exp1   ::= Exp2 "+"  Exp1 ;
+ExpSub.            Exp2   ::= Exp2 "-"  Exp3 ;
+ExpMul.            Exp3   ::= Exp3 "*"  Exp4 ;
+ExpDiv.            Exp3   ::= Exp3 "/"  Exp4 ;
+ExpLit.            Exp4   ::= Integer ;
+ExpVar.            Exp4   ::= Ident ;
+coercions Exp 4;</code></pre>
+<p><strong>Uwaga:</strong></p>
+<ul>
+<li>dodawanie wiąże <strong>w prawo</strong></li>
+<li>przyjmujemy, że dodawanie i mnożenie są przemienne, ale nie są łączne.</li>
+</ul>
+<p>Zadanie polega na napisaniu kompilatora dla języka Instant do JVM i LLVM.</p>
+<p>W tym zadaniu wygenerowany kod powinien wykonywać wszystkie 
+wyspecyfikowane operacje. Nie jest zatem na przykład dozwolone 
+zastapienie wyrazenia 2+3 przez stałą 5, pominiecie przypisań na 
+nieużywane zmienne itp. Usprawnianiem generowanego kodu zajmiemy się w 
+kolejnych zadaniach.</p>
+<p>Jedynym dozwolonym, a nawet pożądanym usprawnieniem jest wybór takiej
+ kolejności obliczania podwyrażeń aby zminimalizować potrzebny rozmiar 
+stosu JVM. W każdym wypadku potrzebny rozmiar stosu musi być obliczony i
+ zadeklarowany (za podejścia typu "<code>limit stack 1000</code>" obcinamy punkty). Podobnie należy obliczyć i zadeklarować liczbę wykorzystywanych zmiennych lokalnych.</p>
+<h2 id="wymagania-techniczne">Wymagania techniczne</h2>
+<ol type="1">
+<li>Projekt powinien być oddany w postaci spakowanego archiwum TAR (.tar.gz lub .tgz)</li>
+<li>W korzeniu projektu (tj. w katalogu, w którym zostało rozpakowane archiwum) muszą się znajdować co najmniej:
+<ul>
+<li>Plik tekstowy README opisujący szczegóły kompilacji i uruchamiania 
+programu, używane narzędzia i biblioteki, strukturę katalogów projektu, 
+ewentualnie odnośniki do bardziej szczegółowej dokumentacji.</li>
+<li>Plik Makefile pozwalający na zbudowanie programu.</li>
+<li>katalog src zawierający wyłącznie pliki źródłowe projektu (plus 
+ewentualnie dostarczony przez nas plik Instant.cf); pliki pomocnicze 
+takie jak biblioteki itp powinny być umieszczone w inych katalogach.</li>
+</ul></li>
+<li>Program musi się kompilować na students poleceniem make (które oczywiście może wywoływać inne programy).</li>
+<li>Wszelkie używane biblioteki (poza biblioteką standardową używanego jezyka programowania) muszą być opisane w README</li>
+<li><p>Po zbudowaniu kompilatora, w korzeniu muszą się znajdować pliki wykonywalne o nazwie <code>insc_jvm</code> oraz <code>insc_llvm</code></p></li>
+<li><p>Wykonanie <code>insc_jvm foo/bar/baz.ins</code> dla poprawnego programu wejściowego <code>baz.ins</code> ma stworzyć pliki <code>baz.j</code> (kod Jasmin) oraz <code>baz.class</code> w katalogu <code>foo/bar</code> (przydatna może być opcja <code>-d</code> dla Jasmina). Wykorzystywany jasmin.jar należy umieścić w katalogu lib Ewentualne metody biblioteczne (<code>printInt</code> etc.) należy umieścić w klasie <code>Runtime.class</code> w katalogu lib</p>
+<p>Wykonanie <code>insc_llvm foo/bar/baz.ins</code> dla poprawnego programu wejściowego <code>baz.ins</code> ma stworzyć pliki <code>baz.ll</code> (tekstowy kod LLVM) oraz <code>baz.bc</code> (bitkod LLVM wykonywalny przy uzyciu <code>lli</code>) w katalogu <code>foo/bar</code></p></li>
+</ol>
+<h2 id="punktacja">Punktacja:</h2>
+<p>Za to zadanie można uzyskać maksymalnie 6p. W przybliżeniu</p>
+<ul>
+<li>JVM 2p</li>
+<li>LLVM 3p</li>
+<li>Optymalizacja kolejności obliczania podwyrażeń 1p.</li>
+</ul>
+<h2 id="spóźnienia">Spóźnienia</h2>
+<p>Programy oddane po terminie będą obciążane karą 1p za każdy 
+(rozpoczęty) tydzień opóźnienia. Ostatecznym terminem, po którym 
+programy nie będą przyjmowane ("termin poprawkowy") jest 7 grudnia.</p>
+<h2 id="zasady">Zasady</h2>
+<p>Projekt zaliczeniowy ma być pisany samodzielnie. Wszelkie przejawy niesamodzielności będą karane. W szczególności:</p>
+<ul>
+<li>nie wolno oglądać kodu innych studentów, pokazywać, ani w jakikolwiek sposób udostępniać swojego kodu</li>
+<li>wszelkie zapożyczenia powinny być opisane z podaniem źródła.</li>
+</ul>
+<h2 id="programy-przykładowe">Programy przykładowe</h2>
+<p>Paczka <a href="http://www.mimuw.edu.pl/%7Eben/Zajecia/Mrj2016/instant161019.tgz">instant161019.tgz</a> (<a href="instant161019.tgz">lokalnie</a>) zawiera programy przykładowe i ich oczekiwane 
+wyjście, oraz 
+plik 
+Instant.cf z gramatyką w formacie BNFC.</p>
+<hr>
+<p>© 2016 Marcin Benke</p>
+
+
+</body></html>
