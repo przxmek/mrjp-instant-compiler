@@ -1,0 +1,1 @@
+all: insc_jvm insc_llvm
