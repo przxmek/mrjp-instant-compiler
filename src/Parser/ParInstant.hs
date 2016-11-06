@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -w #-}
 {-# OPTIONS -fglasgow-exts -cpp #-}
 {-# OPTIONS_GHC -fno-warn-incomplete-patterns -fno-warn-overlapping-patterns #-}
-module ParInstant where
-import AbsInstant
-import LexInstant
-import ErrM
+module Parser.ParInstant where
+import Parser.AbsInstant as AbsInstant
+import Parser.LexInstant as LexInstant
+import Parser.ErrM as ErrM
 import qualified Data.Array as Happy_Data_Array
 import qualified GHC.Exts as Happy_GHC_Exts
 import Control.Applicative(Applicative(..))

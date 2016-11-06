@@ -1,3 +1,9 @@
+dist/
+
 *.o
 *.hi
 *.sublime-workspace
+
+
+insc_jvm
+insc_llvm
