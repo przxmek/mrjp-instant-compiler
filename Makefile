@@ -1,4 +1,6 @@
-all: cabal
+# all: cabal
+all:
+	cd src && $(MAKE)
 
 cabal:
 	cabal configure && cabal build
@@ -6,5 +8,12 @@ cabal:
 	ln -sf dist/build/llvm-compiler/llvm-compiler insc_llvm
 
 
-clean:
+cabal-clean:
 	cabal clean
+
+# clean: cabal-clean
+clean:
+	cd src && $(MAKE) clean
+
+dist-clean: clean
+	rm insc_jvm insc_llvm 
