@@ -1,36 +1,50 @@
 module CompilerLLVM where
 
+import Control.Monad.State
+import Data.Map as Map
+import GHC.Err ( error )
+
 import Parser.AbsInstant
-import Parser.ErrM
 
 
-type Result = Err String
 
 
-compile :: Program -> IO ()
+type Result     = StateT Env IO ProgramTxt
+type Env        = Map Ident Location
+type Location   = Int
+type ProgramTxt = String
+
+
+
+
+notImplError x = error $ "NOT YET IMPLEMENTED: " ++ show x
+
+
+compile :: Program -> IO String
 compile program = do
-  return ()
+  -- let name = "Program"
+  runStateT (transProgram program) Map.empty
+  return ""
 
 
-failure :: Show a => a -> Result
-failure x = Bad $ "Undefined case: " ++ show x
+
+
 
 transIdent :: Ident -> Result
 transIdent x = case x of
-  Ident string -> failure x
+  Ident string -> notImplError x 
 transProgram :: Program -> Result
 transProgram x = case x of
-  Prog stmts -> failure x
+  Prog stmts -> notImplError x
 transStmt :: Stmt -> Result
 transStmt x = case x of
-  SAss ident exp -> failure x
-  SExp exp -> failure x
+  SAss ident exp -> notImplError x
+  SExp exp -> notImplError x
 transExp :: Exp -> Result
 transExp x = case x of
-  ExpAdd exp1 exp2 -> failure x
-  ExpSub exp1 exp2 -> failure x
-  ExpMul exp1 exp2 -> failure x
-  ExpDiv exp1 exp2 -> failure x
-  ExpLit integer -> failure x
-  ExpVar ident -> failure x
-
+  ExpAdd exp1 exp2 -> notImplError x
+  ExpSub exp1 exp2 -> notImplError x
+  ExpMul exp1 exp2 -> notImplError x
+  ExpDiv exp1 exp2 -> notImplError x
+  ExpLit integer -> notImplError x
+  ExpVar ident -> notImplError x

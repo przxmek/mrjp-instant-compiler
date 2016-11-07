@@ -2,8 +2,9 @@ module Main where
 
   import System.Environment ( getArgs )
 
-  import CompilerJVM ( compile )
+  import CompilerLLVM ( compile )
   import MainCommon ( run, showHelp )
+
 
   main :: IO ()
   main = do
@@ -13,6 +14,6 @@ module Main where
       ["--help"]  -> showHelp
       [file]      -> do
         txt <- run file compile
-        writeFile "llvm.ll" txt
+        putStr txt
+        writeFile "prog.ll" txt
         return ()
-      
