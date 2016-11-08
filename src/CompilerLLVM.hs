@@ -76,7 +76,10 @@ transExp (ExpDiv exp1 exp2)     = transBinaryOp "sdiv" exp1 exp2
 transExp (ExpLit num)           = return ("", Val num)
 transExp (ExpVar (Ident ident)) = do
   reg <- nextReg
-  return (formatInstr $ show reg ++ " = load i32, i32* %" ++ ident, reg)
+  (_, vars) <- get
+  if Set.member ident vars
+    then return (formatInstr $ show reg ++ " = load i32, i32* %" ++ ident, reg)
+    else error $ "Error: undefined variable `" ++ ident ++ "`" 
 
 
 transBinaryOp :: String -> Exp -> Exp -> ResultExp

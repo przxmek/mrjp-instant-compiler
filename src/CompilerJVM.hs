@@ -34,7 +34,7 @@ emptyResult = (0, "")
 compile :: Program -> IO String
 compile program = do
   ((stack, mainTxt), env) <- runStateT (transProgram program) Map.empty
-  let locals = Map.size env
+  let locals = (+1) $ Map.size env
   let name = "Program"
   return (
     ".class  public " ++ name ++ "\n" ++
@@ -87,8 +87,10 @@ transExp (ExpDiv exp1 exp2)  = transBinaryOp (BiI IDiv) exp1 exp2
 transExp (ExpLit num)        = transIConst num
 transExp (ExpVar ident)      = do
   env <- get
-  let loc = env Map.! ident
-  jvmInstr $ ILoad loc
+  case Map.lookup ident env of
+    (Just loc) -> jvmInstr $ ILoad loc
+    Nothing  -> let (Ident var) = ident in
+      error $ "Error: undefined variable `" ++ var ++ "`"
 
 
 transBinaryOp :: Instr -> Exp -> Exp -> Result
