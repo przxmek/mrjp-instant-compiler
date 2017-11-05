@@ -31,14 +31,13 @@ emptyResult :: (Int, String)
 emptyResult = (0, "")
 
 
-compile :: Program -> IO String
-compile program = do
+compile :: Program -> String -> IO String
+compile program fileName = do
   ((stack, mainTxt), env) <- runStateT (transProgram program) Map.empty
   let locals = (+1) $ Map.size env
-  let name = "Program"
   return (
-    ".class  public " ++ name ++ "\n" ++
-    ".super  java/lang/Object\n\n" ++
+    ".class public " ++ fileName ++ "\n" ++
+    ".super java/lang/Object\n\n" ++
     ".method public <init>()V\n" ++
     "  aload_0\n  invokespecial java/lang/Object/<init>()V\n  return\n" ++
     ".end method\n\n" ++
@@ -93,15 +92,6 @@ transExp (ExpVar ident)      = do
       error $ "Error: undefined variable `" ++ var ++ "`"
 
 
-transBinaryOp :: Instr -> Exp -> Exp -> Result
-transBinaryOp op@(BiI _) exp1 exp2  = do
-  (e1St, e1Txt) <- transExp exp1
-  (e2St, e2Txt) <- transExp exp2
-  (   _, opTxt) <- jvmInstr op
-  return (e1St + e2St, e1Txt ++ e2Txt ++ opTxt)
-transBinaryOp _ _ _ = return emptyResult
-
-
 transIConst :: Integer -> Result
 transIConst num 
   | num ==     -1                 = jvmInstr   IConstM1
@@ -111,6 +101,21 @@ transIConst num
   | otherwise                     = jvmInstr $ Ldc num
 
 
+transBinaryOp :: Instr -> Exp -> Exp -> Result
+transBinaryOp op@(BiI biOp) exp1 exp2  = do
+  (e1St, e1Txt) <- transExp exp1
+  (e2St, e2Txt) <- transExp exp2
+  (   _, opTxt) <- jvmInstr op
+  if e1St < e2St
+    then return (e2St, e2Txt ++ e1Txt ++ swapBiOp biOp ++ opTxt)
+    else return (max e1St $ e2St + 1, e1Txt ++ e2Txt ++ opTxt)
+transBinaryOp _ _ _ = return emptyResult
+
+
+swapBiOp :: BinaryInstr -> String
+swapBiOp IAdd = formatInstr "swap"
+swapBiOp IMul = formatInstr "swap"
+swapBiOp    _ = ""
 
 
 jvmInstr :: Instr -> Result
@@ -123,25 +128,13 @@ jvmInstr (IConst_ i) = return (1, formatInstr $ "iconst_" ++ show i)
 jvmInstr  (BiPush i) = return (1, formatInstr $ "bipush " ++ show i)
 jvmInstr  (SiPush i) = return (1, formatInstr $ "sipush " ++ show i)
 jvmInstr     (Ldc i) = return (1, formatInstr $    "ldc " ++ show i)
-jvmInstr   (ILoad l) = jvmInstrILoad l
-jvmInstr  (IStore l) = jvmInstrIStore l
+jvmInstr   (ILoad l) = return (1, formatInstr $  "iload " ++ show l)
+jvmInstr  (IStore l) = return (1, formatInstr $  "istore " ++ show l)
 
 jvmInstr PrintStreamISwap = return
-  (0, "  getstatic java/lang/System/out Ljava/io/PrintStream;\n" ++
+  (1, "  getstatic java/lang/System/out Ljava/io/PrintStream;\n" ++
       "  swap\n" ++
       "  invokevirtual java/io/PrintStream/println(I)V\n")
-
-
-jvmInstrILoad :: Int -> Result
-jvmInstrILoad l
-  | l < 4     = return (1, formatInstr $  "iload_" ++ show l)
-  | otherwise = return (1, formatInstr $  "iload " ++ show l)
-
-
-jvmInstrIStore :: Int -> Result
-jvmInstrIStore l
-  | l < 4     = return (1, formatInstr $  "istore_" ++ show l)
-  | otherwise = return (1, formatInstr $  "istore " ++ show l)
 
 
 formatInstr :: String -> String

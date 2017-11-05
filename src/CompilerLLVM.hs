@@ -24,14 +24,16 @@ instance Show ExpRet where
 initEnv :: Env
 initEnv = (1, Set.empty)
 
+
+nextReg :: StateT Env IO ExpRet
 nextReg = do
   (reg, vars) <- get
   put (reg + 1, vars)
   return $ Reg reg
 
 
-compile :: Program -> IO String
-compile program = do
+compile :: Program -> String -> IO String
+compile program _ = do
   (mainTxt, _) <- runStateT (transProgram program) initEnv
   return (
     "@dnl = internal constant [4 x i8] c\"%d\\0a\\00\"\n\n" ++

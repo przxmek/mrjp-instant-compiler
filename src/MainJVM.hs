@@ -1,6 +1,8 @@
 module Main where
 
   import System.Environment ( getArgs )
+  import System.FilePath ( replaceExtension, takeDirectory )
+  import System.Process ( system )
 
   import CompilerJVM ( compile )
   import MainCommon ( run, showHelp )
@@ -10,10 +12,14 @@ module Main where
   main = do
     args <- getArgs
     case args of
-      []          -> showHelp
       ["--help"]  -> showHelp
       [file]      -> do
         txt <- run file compile
-        putStr txt
-        writeFile "prog.j" txt
-        return ()
+
+        let outputFilePath = replaceExtension file ".j"
+        writeFile outputFilePath txt
+        putStrLn $ "Generated: " ++ outputFilePath
+        system $ "java -jar lib/jasmin.jar " ++ outputFilePath ++ " -d " ++ takeDirectory outputFilePath
+
+        return ()    
+      _           -> showHelp

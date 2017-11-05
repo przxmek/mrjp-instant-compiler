@@ -16,4 +16,4 @@ clean:
 	cd src && $(MAKE) clean
 
 dist-clean: clean
-	rm insc_jvm insc_llvm 
+	rm insc_jvm insc_llvm

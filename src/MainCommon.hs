@@ -1,18 +1,20 @@
 module MainCommon where
 
   import System.Exit ( exitFailure )
+  import System.FilePath ( takeBaseName )
 
   import Parser.AbsInstant ( Program )
   import Parser.ErrM ( Err(..) )
   import Parser.ParInstant ( myLexer, pProgram )
 
 
-  type CompileFunc = Program -> IO String
+  type CompileFunc = Program -> String -> IO String
 
 
   run :: FilePath -> CompileFunc -> IO String
   run file compile = do
     codeTxt <- readFile file
+    let fileName = takeBaseName file
     let tokens = myLexer codeTxt in
         case pProgram tokens of
           Bad s -> do
@@ -23,7 +25,7 @@ module MainCommon where
             putStrLn codeTxt
             
             exitFailure
-          Ok program -> compile program
+          Ok program -> compile program fileName
 
 
   showHelp :: IO ()
@@ -31,6 +33,6 @@ module MainCommon where
     putStrLn $ unlines
       [ "usage: Call with one of the following argument combinations:"
       , "  --help          Display this help message."
-      , "  (files)          Parse content of file."
+      , "  filePath        Parse content of file."
       ]
     exitFailure
