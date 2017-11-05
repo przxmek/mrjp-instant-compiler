@@ -128,13 +128,25 @@ jvmInstr (IConst_ i) = return (1, formatInstr $ "iconst_" ++ show i)
 jvmInstr  (BiPush i) = return (1, formatInstr $ "bipush " ++ show i)
 jvmInstr  (SiPush i) = return (1, formatInstr $ "sipush " ++ show i)
 jvmInstr     (Ldc i) = return (1, formatInstr $    "ldc " ++ show i)
-jvmInstr   (ILoad l) = return (1, formatInstr $  "iload " ++ show l)
-jvmInstr  (IStore l) = return (1, formatInstr $  "istore " ++ show l)
+jvmInstr   (ILoad l) = jvmInstrILoad l
+jvmInstr  (IStore l) = jvmInstrIStore l
 
 jvmInstr PrintStreamISwap = return
   (1, "  getstatic java/lang/System/out Ljava/io/PrintStream;\n" ++
       "  swap\n" ++
       "  invokevirtual java/io/PrintStream/println(I)V\n")
+
+
+jvmInstrILoad :: Int -> Result
+jvmInstrILoad l
+  | l < 4     = return (1, formatInstr $  "iload_" ++ show l)
+  | otherwise = return (1, formatInstr $  "iload " ++ show l)
+
+
+jvmInstrIStore :: Int -> Result
+jvmInstrIStore l
+  | l < 4     = return (1, formatInstr $  "istore_" ++ show l)
+  | otherwise = return (1, formatInstr $  "istore " ++ show l)
 
 
 formatInstr :: String -> String
