@@ -113,8 +113,8 @@ transBinaryOp _ _ _ = return emptyResult
 
 
 swapBiOp :: BinaryInstr -> String
-swapBiOp IAdd = formatInstr "swap"
-swapBiOp IMul = formatInstr "swap"
+swapBiOp ISub = formatInstr "swap"
+swapBiOp IDiv = formatInstr "swap"
 swapBiOp    _ = ""
 
 
