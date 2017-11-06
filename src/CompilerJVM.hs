@@ -75,7 +75,7 @@ transStmt (SAss ident expr)  = do
 transStmt (SExp expr)        = do
   (stack, txt)  <- transExp expr
   (printStack, printTxt) <- jvmInstr PrintStreamISwap
-  return (stack + printStack, txt ++ printTxt)
+  return (max stack printStack, txt ++ printTxt)
 
 
 transExp :: Exp -> Result
