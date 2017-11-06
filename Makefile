@@ -1,6 +1,6 @@
 # all: cabal
 all:
-	cd src && $(MAKE)
+	cd src && '$(MAKE)'
 
 cabal:
 	cabal configure && cabal build
@@ -13,7 +13,7 @@ cabal-clean:
 
 # clean: cabal-clean
 clean:
-	cd src && $(MAKE) clean
+	cd src && '$(MAKE)' clean
 
 dist-clean: clean
 	rm insc_jvm insc_llvm
