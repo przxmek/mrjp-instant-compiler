@@ -132,7 +132,7 @@ jvmInstr   (ILoad l) = jvmInstrILoad l
 jvmInstr  (IStore l) = jvmInstrIStore l
 
 jvmInstr PrintStreamISwap = return
-  (1, "  getstatic java/lang/System/out Ljava/io/PrintStream;\n" ++
+  (2, "  getstatic java/lang/System/out Ljava/io/PrintStream;\n" ++
       "  swap\n" ++
       "  invokevirtual java/io/PrintStream/println(I)V\n")
 
