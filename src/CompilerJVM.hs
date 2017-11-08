@@ -34,7 +34,7 @@ emptyResult = (0, "")
 compile :: Program -> String -> IO String
 compile program fileName = do
   ((stack, mainTxt), env) <- runStateT (transProgram program) Map.empty
-  let locals = (+1) $ Map.size env
+  let locals = max 1 $ Map.size env
   return (
     ".class public " ++ fileName ++ "\n" ++
     ".super java/lang/Object\n\n" ++
