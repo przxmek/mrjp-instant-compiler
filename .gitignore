@@ -6,4 +6,6 @@ dist/
 
 
 insc_jvm
+insc_jvm.exe
 insc_llvm
+insc_llvm.exe

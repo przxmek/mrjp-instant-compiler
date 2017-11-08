@@ -9,3 +9,6 @@ PrintInstant.hs
 SkelInstant.hs
 TestInstant
 TestInstant.hs
+
+*.j
+*.class
