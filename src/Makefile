@@ -7,4 +7,5 @@ insc_llvm: MainLLVM.hs
 	ghc MainLLVM.hs -o ../insc_llvm
 
 clean:
+	cd Parser && '$(MAKE)' clean
 	rm -rf *.o *.hi
